@@ -33,9 +33,9 @@ class CalenderControllerTest {
 
     @Test
     void 캘린더_조회() throws Exception {
-        mockMvc.perform(get("/calendar"))
+        mockMvc.perform(get("/index"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("calendar"));
+                .andExpect(view().name("index"));
     }
 
 
@@ -50,7 +50,7 @@ class CalenderControllerTest {
                         .param("title", expect)
                         .param("date", "2023-06-23"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/calendar"));
+                .andExpect(redirectedUrl("/index"));
 
         Event event = eventRepository.findByDate(LocalDate.of(2023, 06, 23)).get(0);
         assertEquals(expect, event.getTitle());

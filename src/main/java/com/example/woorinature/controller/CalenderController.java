@@ -18,11 +18,11 @@ public class CalenderController {
     @Autowired
     private EventRepository eventRepository;
 
-    @GetMapping("/calendar")
+    @GetMapping("/index")
     public String getCalender(Model model) {
         List<Event> events = eventRepository.findAll();
         model.addAttribute("events", events);
-        return "calendar";
+        return "index";
     }
 
     @PostMapping("/add-event")
@@ -38,6 +38,6 @@ public class CalenderController {
         model.addAttribute("message", "휴일 등록 성공!");
 
         // 현재 페이지로 이동 -> 200 상태 코드 반환
-        return "redirect:/calendar";
+        return "redirect:/index";
     }
 }
