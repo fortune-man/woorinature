@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -19,11 +18,11 @@ public class CalenderController {
     @Autowired
     private EventRepository eventRepository;
 
-    @GetMapping("/calender")
+    @GetMapping("/calendar")
     public String getCalender(Model model) {
         List<Event> events = eventRepository.findAll();
         model.addAttribute("events", events);
-        return "calender";
+        return "calendar";
     }
 
     @PostMapping("/add-event")
@@ -32,6 +31,6 @@ public class CalenderController {
         event.setTitle(title);
         event.setDate(LocalDate.parse(date));
         eventRepository.save(event);
-        return "redirect:/calender";
+        return "redirect:/calendar";
     }
 }
