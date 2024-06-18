@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @Entity
 public class Event {
 
+    @jakarta.persistence.Id
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
