@@ -50,7 +50,6 @@ class CalenderControllerTest {
                         .param("title", expect)
                         .param("date", "2023-06-23"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(status().isOk())
                 .andExpect(redirectedUrl("/calendar"));
 
         Event event = eventRepository.findByDate(LocalDate.of(2023, 06, 23)).get(0);
