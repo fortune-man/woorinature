@@ -1,30 +1,244 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
-    <title>Family Scheduler</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar Layout</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            border: 1px solid #ccc;
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        .day {
+            padding: 10px;
+            text-align: center;
+            border-right: 1px solid #ccc;
+            border-bottom: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        .month {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .weekend {
+            background-color: #f2f2f2;
+        }
+
+        .red {
+            background-color: red;
+        }
+
+        .add-button {
+            position: absolute;
+            bottom: 20px;
+            left: calc(50% - 50px);
+            background-color: #ff7043;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .add-button:hover {
+            transform: scale(1.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            text-align: center;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .input-container {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #ff7043;
+        }
+
+        button {
+            background-color: #ff7043;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #ff8c63;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-    <h1>Family Scheduler</h1>
-    <form method="post" action="/add-event">
-        <div class="form-group">
-            <label for="title">Event Title:</label>
-            <input type="text" id="title" name="title" class="form-control" required>
-        </div>
-        <div class="form-group">
-            <label for="date">Date:</label>
-            <input type="date" id="date" name="date" class="form-control" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Add Event</button>
-    </form>
-    <h2>Upcoming Events</h2>
-    <ul>
-        <li th:each="event : ${events}">
-            <span th:text="${event.title}"></span> on
-            <span th:text="${event.date}"></span>
-        </li>
-    </ul>
+<div class="month" id="currentMonth">6월</div>
+<div class="calendar" id="calendarContainer">
+    <!-- Calendar days will be dynamically added here -->
 </div>
+
+<!-- 일정 추가 버튼 -->
+<button class="add-button" id="addEventBtn">+</button>
+
+<!-- 일정 입력 모달 -->
+<div id="addEventModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="input-container">
+            <input type="text" id="eventInput" placeholder="예) 이번주 일요일 가족 식사 모임 (최대 20자)">
+        </div>
+        <button id="submitEvent">일정 등록</button>
+        <button id="copyLink" style="display:none">복사</button>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    const calendarContainer = document.getElementById('calendarContainer');
+    const currentMonthElement = document.getElementById('currentMonth');
+    const addEventBtn = document.getElementById('addEventBtn');
+    const modal = document.getElementById('addEventModal');
+    const span = document.getElementsByClassName('close')[0];
+
+    // 현재 한국 시간 기준으로 월을 설정
+    const currentDate = new Date();
+    let currentMonth = currentDate.getMonth() + 1; // getMonth()는 0부터 시작하므로 +1을 해줍니다.
+
+    setupCalendar(currentMonth.toString());
+
+    function setupCalendar(month) {
+        const daysInMonth = getDaysInMonth(month);
+        const firstDayOfMonth = new Date(`2024-${month}-01`).getDay(); // Example year 2024
+        const days = [];
+
+        for (let i = 1; i <= daysInMonth; i++) {
+            const day = document.createElement('div');
+            day.classList.add('day');
+            day.textContent = i;
+
+            if ((firstDayOfMonth + i - 1) % 7 === 0 || (firstDayOfMonth + i - 1) % 7 === 6) {
+                day.classList.add('weekend');
+            }
+
+            days.push(day);
+        }
+
+        calendarContainer.innerHTML = '';
+        days.forEach(day => calendarContainer.appendChild(day));
+        currentMonthElement.textContent = `${month}월`;
+        addEventListeners();
+    }
+
+    function getDaysInMonth(month) {
+        return new Date(2023, month, 0).getDate(); // Example year 2023
+    }
+
+    function addEventListeners() {
+        const days = document.querySelectorAll('.day');
+        days.forEach(day => {
+            day.addEventListener('click', () => {
+                day.classList.toggle('red');
+            });
+        });
+
+        addEventBtn.onclick = function() {
+            modal.style.display = "block";
+        };
+
+        span.onclick = function() {
+            modal.style.display = "none";
+        };
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        };
+
+        const submitButton = document.getElementById('submitEvent');
+        submitButton.addEventListener('click', function() {
+            const eventInput = document.getElementById('eventInput').value;
+            if (eventInput.trim().length > 0) {
+                // 일정 등록 및 처리 로직 추가
+                alert('일정 등록 완료 ✅');
+                document.getElementById('copyLink').style.display = 'inline-block';
+            } else {
+                alert('일정을 입력해주세요.');
+            }
+        });
+
+        const copyButton = document.getElementById('copyLink');
+        copyButton.addEventListener('click', function() {
+            const copyText = `URL 링크 복사: ${window.location.href}`;
+            navigator.clipboard.writeText(copyText);
+            alert('복사 완료 ✅');
+        });
+    }
+</script>
 </body>
 </html>
