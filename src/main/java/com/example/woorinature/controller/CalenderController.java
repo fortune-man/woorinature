@@ -26,18 +26,24 @@ public class CalenderController {
     }
 
     @PostMapping("/add-event")
-    public String addEvent(@RequestParam String title, @RequestParam String date, Model model) {
+    public String addEvent(@RequestParam(value = "title") String title, @RequestParam("date") String date, Model model) {
+        // 이벤트 객체 생성
         Event event = new Event();
+
+        // 속성 설정
         event.setTitle(title);
         event.setDate(LocalDate.parse(date));
+
+        // 이벤트 저장
         eventRepository.save(event);
 
-        // 리스트에 이벤트 저장 -> 조회 -> 모델에 추가
+        // 저장된 이벤트 목록을 모델에 추가
         List<Event> events = eventRepository.findAll();
-        model.addAttribute("events", events);
-        model.addAttribute("message", "휴일 등록 성공!");
 
-        // 현재 페이지로 이동 -> 200 상태 코드 반환
+        model.addAttribute("events", events);
+        model.addAttribute("message", "휴일 등록 성공 ✅");
+
+        // 리다이렉트하여 페이지 이동
         return "redirect:/index";
     }
 }

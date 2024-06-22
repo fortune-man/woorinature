@@ -1,6 +1,7 @@
 package com.example.woorinature.repository;
 
 import com.example.woorinature.model.Event;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -16,8 +17,9 @@ class EventRepositoryTest {
     @Autowired
     private EventRepository eventRepository;
 
+    @DisplayName("이벤트_저장과_조회_테스트")
     @Test
-    public void 이벤트_저장과_조회_테스트() {
+    public void eventRepositoryTest() {
 
         // given
         String expect = "이번주 일요일 가족 식사 모임";
