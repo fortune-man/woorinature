@@ -12,7 +12,6 @@ import java.time.LocalDate;
 public class Event {
 
     @jakarta.persistence.Id
-    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String title;
