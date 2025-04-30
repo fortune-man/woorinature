@@ -46,7 +46,7 @@ class CalenderControllerTest {
     void addEventTest() throws Exception {
 
         // given
-        String expect = "이번주 일요일 가족 식사 모임";
+        String expect = "이번주 수요일 가족 식사 모임";
 
         // then
         mockMvc.perform(post("/add-event")
@@ -55,7 +55,7 @@ class CalenderControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/index"));
 
-        Event event = eventRepository.findByDate(LocalDate.of(2023, 06, 23)).get(0);
+        Event event = eventRepository.findByDate(LocalDate.of(2025, 04, 30)).get(0);
         assertEquals(expect, event.getTitle());
 
     }
