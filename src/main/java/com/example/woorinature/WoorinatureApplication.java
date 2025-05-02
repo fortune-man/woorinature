@@ -8,7 +8,3 @@ public class WoorinatureApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(WoorinatureApplication.class, args);
-        soighrog
-    }
-
-}
