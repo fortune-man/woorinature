@@ -14,5 +14,10 @@
 - 쉬는날 함께 얼굴보기 어려워졌다는 페인포인트 발견
 - 쉽고 직관적인 스케줄링 서비스 개발로로 문제 해결 시도
 
+---
+
+발생한 문제
+
+
 결과
 - [정리](https://velog.io/@urtimeislimited/%EC%A0%95%EB%A6%AC-%EC%9A%B0%EB%A6%AC%EC%8A%A4%EB%9F%AC%EC%9B%80)
